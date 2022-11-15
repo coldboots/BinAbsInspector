@@ -1,6 +1,6 @@
-ARG UBUNTU_MIRROR=mirrors.tuna.tsinghua.edu.cn
+ARG UBUNTU_MIRROR=no.mirrors.blix.com
 
-FROM gradle:7-jdk11
+FROM gradle:7-jdk17
 
 ARG UBUNTU_MIRROR
 # Non-interactive installation requirements
@@ -22,9 +22,9 @@ RUN apt-get update -qq && apt-get install -y \
 
 # Ghidra installation
 
-ARG GHIDRA_RELEASE_TAG=Ghidra_10.1.2_build
-ARG GHIDRA_VERSION=ghidra_10.1.2_PUBLIC
-ARG GHIDRA_BUILD=${GHIDRA_VERSION}_20220125
+ARG GHIDRA_RELEASE_TAG=Ghidra_10.2_build
+ARG GHIDRA_VERSION=ghidra_10.2_PUBLIC
+ARG GHIDRA_BUILD=${GHIDRA_VERSION}_20221101
 
 RUN wget https://github.com/NationalSecurityAgency/ghidra/releases/download/${GHIDRA_RELEASE_TAG}/${GHIDRA_BUILD}.zip && \
     unzip -d ghidra ${GHIDRA_BUILD}.zip && \
@@ -34,7 +34,7 @@ RUN wget https://github.com/NationalSecurityAgency/ghidra/releases/download/${GH
 ENV PATH="/opt/ghidra:/opt/ghidra/support:${PATH}"
 ENV GHIDRA_INSTALL_DIR="/opt/ghidra"
 
-ARG Z3_VERSION="4.8.15"
+ARG Z3_VERSION="4.11.2"
 RUN mkdir /opt/z3 && cd /opt/z3 \
     && wget -qO- https://github.com/Z3Prover/z3/archive/z3-${Z3_VERSION}.tar.gz | tar xz --strip-components=1 \
     && mkdir build && cd build && cmake \
@@ -61,3 +61,4 @@ RUN cp dist/*.zip "${GHIDRA_INSTALL_DIR}/Ghidra/Extensions" && \
 
 # Provide an easy way to run the plugin
 ENTRYPOINT ["analyzeHeadless", "~", "tmp", "-deleteProject", "-overwrite", "-postScript", "BinAbsInspector.java"]
+
